@@ -1,0 +1,64 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans CJK JP','Segoe UI',sans-serif" role="img" aria-label="苦手フォロー・ビルダー サムネイル">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f1226"/><stop offset="0.55" stop-color="#171a3a"/><stop offset="1" stop-color="#241947"/>
+    </linearGradient>
+    <linearGradient id="acc" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7c5cff"/><stop offset="1" stop-color="#31d0aa"/>
+    </linearGradient>
+    <linearGradient id="cor" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2a2f5c"/><stop offset="1" stop-color="#1b1f42"/>
+    </linearGradient>
+    <filter id="sf" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="14" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <g stroke="#ffffff" stroke-opacity="0.04"><path d="M0 158 H1200 M0 316 H1200 M0 474 H1200 M300 0 V630 M600 0 V630 M900 0 V630"/></g>
+
+  <!-- 上部ラベル -->
+  <g transform="translate(72,60)">
+    <rect x="0" y="0" width="216" height="40" rx="20" fill="#ffffff" fill-opacity="0.08" stroke="url(#acc)" stroke-width="1.5"/>
+    <circle cx="26" cy="20" r="6" fill="#31d0aa"/>
+    <text x="46" y="26" fill="#c7cbf5" font-size="18" font-weight="600" letter-spacing="1">CLAUDE SKILL</text>
+  </g>
+
+  <!-- タイトル/サブコピー -->
+  <text x="72" y="182" fill="#ffffff" font-size="62" font-weight="800" letter-spacing="-1">苦手フォロー・ビルダー</text>
+  <text x="74" y="246" fill="url(#acc)" font-size="38" font-weight="800">苦手は、AIの相棒に助けてもらう</text>
+  <text x="74" y="296" fill="#aeb3e0" font-size="23" font-weight="500">直そうと頑張らず、強みを伸ばす時間をつくる</text>
+
+  <!-- 一枚絵の図: 入力 + 変換 -> 出力 -->
+  <g transform="translate(72,372)">
+    <g>
+      <rect x="0" y="30" width="196" height="150" rx="18" fill="url(#cor)" stroke="#3a3f75" stroke-width="1.5"/>
+      <text x="98" y="70" text-anchor="middle" fill="#8f95d6" font-size="15" font-weight="600">INPUT</text>
+      <text x="98" y="112" text-anchor="middle" fill="#ffffff" font-size="21" font-weight="800">あなたの苦手</text>
+      <text x="98" y="150" text-anchor="middle" fill="#7c81bf" font-size="13">抜け漏れ・先延ばし</text>
+    </g>
+    <g transform="translate(214,105)"><text x="0" y="8" fill="url(#acc)" font-size="46" font-weight="800">+</text></g>
+    <g transform="translate(276,20)">
+      <rect x="0" y="0" width="330" height="170" rx="18" fill="#ffffff" fill-opacity="0.05" stroke="url(#acc)" stroke-width="2"/>
+      <text x="24" y="40" fill="#ffffff" font-size="20" font-weight="800">深堀り＆設計</text>
+      <g fill="#d5d9ff" font-size="15.5" font-weight="600">
+        <text x="24" y="74">・なぜなぜで本質へ</text>
+        <text x="24" y="100">・客観データで裏取り</text>
+        <text x="24" y="126">・受動 / 自動 / 低壁で検証</text>
+        <text x="24" y="152">・第三者目線で対案</text>
+      </g>
+    </g>
+    <g transform="translate(626,105)">
+      <path d="M0 0 H70" stroke="url(#acc)" stroke-width="6" stroke-linecap="round"/>
+      <path d="M62 -12 L84 0 L62 12 Z" fill="#31d0aa"/>
+    </g>
+    <g transform="translate(724,20)" filter="url(#sf)">
+      <rect x="0" y="0" width="320" height="170" rx="20" fill="url(#acc)"/>
+      <text x="28" y="52" fill="#0f1226" font-size="22" font-weight="800">AIの相棒が代行</text>
+      <g fill="#0f1226" font-size="16" font-weight="700" opacity="0.92">
+        <text x="28" y="90">毎朝AIが自動チェック</text>
+        <text x="28" y="120">抜けはSlackに通知</text>
+        <text x="28" y="150">あなたは受け取るだけ</text>
+      </g>
+    </g>
+  </g>
+</svg>

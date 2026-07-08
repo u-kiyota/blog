@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>「苦手」はAIの相棒に助けてもらう — 苦手フォロー・ビルダーの設計</title>
+<style>
+  :root{
+    --bg:#0f1226; --panel:#1a1e40; --panel2:#20244d;
+    --ink:#eef0ff; --sub:#aeb3e0; --muted:#8288c0;
+    --line:#2c3163; --violet:#7c5cff; --teal:#31d0aa;
+    --grad:linear-gradient(90deg,#7c5cff,#31d0aa);
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:radial-gradient(1200px 700px at 80% -10%,#241947 0%,var(--bg) 55%);
+    color:var(--ink); line-height:1.85;
+    font-family:'Noto Sans JP','Hiragino Kaku Gothic ProN','Segoe UI',sans-serif;
+    -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px; margin:0 auto; padding:0 22px 96px}
+  .hero{max-width:1040px; margin:0 auto; padding:34px 22px 8px}
+  .hero img{width:100%; height:auto; display:block; border-radius:20px;
+    box-shadow:0 30px 80px rgba(0,0,0,.5); border:1px solid var(--line)}
+  h1{font-size:2.0rem; line-height:1.4; margin:44px 0 6px; letter-spacing:-.01em}
+  h2{font-size:1.4rem; margin:56px 0 10px; padding-top:8px}
+  h2 .n{color:var(--teal); font-weight:800; margin-right:.4em}
+  h3{font-size:1.06rem; margin:26px 0 4px}
+  p{margin:14px 0; color:#dfe2ff}
+  .lead{font-size:1.1rem; color:var(--sub)}
+  .kicker{display:inline-flex; align-items:center; gap:8px; margin-top:8px;
+    padding:6px 14px; border:1px solid var(--violet); border-radius:999px;
+    font-size:.8rem; color:#cdd1ff; background:rgba(124,92,255,.08)}
+  .kicker::before{content:""; width:8px;height:8px;border-radius:50%;background:var(--teal)}
+  strong{color:#fff}
+  code{font-family:'Consolas','SF Mono',monospace; font-size:.9em; color:#b9f5e4;
+    background:rgba(49,208,170,.1); padding:2px 6px; border-radius:6px}
+  .accent{background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:800}
+  .callout{margin:26px 0; padding:20px 22px; border-radius:16px;
+    background:linear-gradient(180deg,rgba(124,92,255,.12),rgba(49,208,170,.06));
+    border:1px solid var(--line); border-left:4px solid var(--violet)}
+  .callout p{margin:0; color:#eceeff}
+  .flow{display:grid; grid-template-columns:repeat(5,1fr) ; gap:8px; margin:24px 0}
+  .flow .box{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px 8px; text-align:center}
+  .flow .box .s{font-size:.7rem; font-weight:800; color:var(--teal); letter-spacing:.1em}
+  .flow .box b{display:block; font-size:.92rem; margin:4px 0 2px}
+  .flow .box span{font-size:.75rem; color:var(--muted); line-height:1.5; display:block}
+  .flow .box.gen{background:var(--grad); border:0}
+  .flow .box.gen .s{color:#0f1226}
+  .flow .box.gen b, .flow .box.gen span{color:#0f1226}
+  .struct{width:100%; border-collapse:collapse; margin:18px 0; font-size:.92rem}
+  .struct th,.struct td{border:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top}
+  .struct th{background:var(--panel2); color:#cfd3ff; font-weight:700}
+  .struct td:first-child{white-space:nowrap; color:#b9f5e4; font-family:'Consolas',monospace; font-size:.85rem}
+  .struct td{color:var(--sub)}
+  ul.tight li{margin:8px 0; color:#e4e6ff}
+  ul.tight li b{color:#fff}
+  pre{background:#0c0f24; border:1px solid var(--line); border-radius:12px; padding:16px;
+    overflow:auto; font-family:'Consolas','SF Mono',monospace; font-size:.82rem; line-height:1.6; color:#d5d9ff}
+  pre code{background:none; padding:0; color:inherit}
+  .files{margin:14px 0 0}
+  details.filebox{border:1px solid var(--line); border-radius:12px; margin:10px 0; background:rgba(255,255,255,.02); overflow:hidden}
+  details.filebox>summary{cursor:pointer; padding:12px 16px; list-style:none; font-weight:700; color:#cfd3ff;
+    display:flex; align-items:center; gap:10px}
+  details.filebox>summary::-webkit-details-marker{display:none}
+  details.filebox>summary::before{content:"▶"; color:var(--teal); font-size:.7rem; transition:transform .15s}
+  details.filebox[open]>summary::before{transform:rotate(90deg)}
+  details.filebox .fn{font-family:'Consolas',monospace; font-size:.85rem}
+  details.filebox pre{margin:0; border:0; border-top:1px solid var(--line); border-radius:0; max-height:460px}
+  .related{margin:40px 0 0}
+  .related .lbl{font-size:.75rem;font-weight:800;letter-spacing:.12em;color:var(--teal)}
+  .related a.rl{display:flex;align-items:center;gap:14px;margin-top:10px;padding:16px 18px;
+    border:1px solid var(--line);border-radius:14px;text-decoration:none;color:var(--ink);
+    background:linear-gradient(180deg,var(--panel2),var(--panel));transition:border-color .15s}
+  .related a.rl:hover{border-color:#38507a}
+  .related a.rl .ic{flex:0 0 auto;font-family:'Consolas',monospace;font-size:.7rem;font-weight:800;
+    letter-spacing:.08em;color:#0f1226;background:var(--grad);padding:5px 8px;border-radius:7px}
+  .related a.rl .tx b{display:block;font-size:1rem}
+  .related a.rl .tx span{font-size:.85rem;color:var(--sub)}
+  .related a.rl .go{margin-left:auto;color:var(--teal);font-weight:800}
+  .foot{margin-top:40px; color:var(--muted); font-size:.82rem; text-align:center; border-top:1px solid var(--line); padding-top:20px}
+  @media(max-width:680px){
+    h1{font-size:1.55rem} h2{font-size:1.2rem}
+    .flow{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <img class="thumb" src="images/weakness-follow-skill-builder_thumbnail.png"
+       alt="苦手フォロー・ビルダー サムネイル" width="1200" height="630">
+</div>
+
+<div class="wrap">
+  <span class="kicker">技術ブログ — 苦手フォロー・ビルダーの設計</span>
+
+  <h1>「苦手」を直そうとするのをやめて、AIの相棒に助けてもらうことにした</h1>
+
+  <p class="lead">苦手は、気合いでは驚くほど直りません。しかも、苦手を人並みに引き上げる労力に対してリターンは小さい。それより、AIでフォローして得意に時間を使う方が合理的です。この記事では、その発想を「スキルを生成するスキル」として実装した<strong>苦手フォロー・ビルダー</strong>の設計を、実ソースつきで解説します。</p>
+
+  <h2><span class="n">1.</span>背景と課題設定</h2>
+
+  <p>個人の「苦手」をLLMで補助するスキルは、素朴に作ると<strong>ほぼ失敗します</strong>。理由は2つあります。ひとつは、ユーザーが最初に口にする解決策が「送信前に自分でチェックする」「毎回気をつける」のような<strong>意識・根性に依存した対策</strong>であること。もうひとつは、そもそも本人が申告する「原因」がずれていること。人は自分の苦手の原因を正確には自己申告できません。</p>
+
+  <p>そこで前提を1つ置きました。<strong>これは「これまで何度も直そうとして直せなかった苦手」の改善である</strong>、と。だから解決策は、本人が能動的に頑張ることを一切あてにしてはいけない。本人が何もしなくても、行動を変えなくても、解決に近づくものでなければならない——この制約を設計全体の背骨にしています。</p>
+
+  <div class="callout">
+    <p>ひとことで言うと、このスキルは<span class="accent">「苦手を肩代わりしてくれるAIの相棒（＝あなた専用スキル）」を、対話を通じて設計・生成するメタスキル</span>です。生成物ではなく、生成に至る<strong>深堀りと議論</strong>のプロセスに価値の重心を置いています。</p>
+  </div>
+
+  <h2><span class="n">2.</span>設計の考え方</h2>
+
+  <h3>「良いスキル」を3つの必須基準で定義する</h3>
+  <p>採用する解決策は、次の3つを<strong>すべて</strong>満たすものだけに限定しました。1つでも欠ければ却下し、満たす形に作り替えます。判断を毎回考え直さずに済むよう、基準そのものを明文化して外部化しています。</p>
+  <ul class="tight">
+    <li><b>受動性</b> — 本人が能動的に動かなくても回る。本人の役割は「受け取る／承認する」程度に留める。</li>
+    <li><b>自動化</b> — トリガーが「人の記憶」ではなく「時間（スケジュール）」か「イベント（受信・投稿・作成）」である。</li>
+    <li><b>低い壁</b> — 起動・利用コストがほぼゼロ。新しい習慣や複雑な操作を要求しない。結果は普段見るSlackやメールに届く。</li>
+  </ul>
+  <p>この基準の肝は<strong>トリガーの移し替え</strong>です。「人が気づいて起動する」設計を捨て、<code>scheduled-tasks</code>によるcron起動やイベントのポーリング検知へ寄せる。ここが受動性と自動化を同時に満たす核心になります。</p>
+
+  <h3>プロセスをゲートで守る</h3>
+  <p>このスキルは①〜⑤を<strong>順番に</strong>通します。特に、深堀り（②）と議論（③）を飛ばして生成（④）に直行するのを禁じています。ここを飛ばすとスキルの価値がゼロになるからです。さらに生成後は、必ず<strong>独立したサブエージェント</strong>にレビューさせる（⑤）ことで、設計者が自分の案を肯定しがちなバイアスを外部の目で相殺します。</p>
+
+  <h3>生成は自前でやらない（責務の分離）</h3>
+  <p>スキルの生成（④）は、<code>SKILL.md</code>を手書きせず、必ず<code>guided-skill-builder</code>（<code>skill-creator</code>のラッパー）に委譲します。progressive disclosure・冪等性・安全確認といった設計原則の担保は生成側の責務、こちらは<strong>「何を作るべきかの特定」に専念</strong>する、という責務分離です。</p>
+
+  <h2><span class="n">3.</span>スキルの構造</h2>
+  <p>判断基準や手法は<code>SKILL.md</code>に全部書かず、必要になった時に読む参照ファイルへ切り出しています（progressive disclosure）。全文は記事末尾に掲載しています。</p>
+
+  <table class="struct">
+    <tr><th>ファイル</th><th>役割</th></tr>
+    <tr><td>SKILL.md</td><td>全体フロー①〜⑤と思想。各ステップで「どの参照を読むか」を指示するハブ。</td></tr>
+    <tr><td>references/deep-dive-methods.md</td><td>②の深堀り手法。5 Whys・氷山モデル・原因の4分類・客観データ照合の手順。</td></tr>
+    <tr><td>references/mechanism-patterns.md</td><td>③④の設計パターン。3必須基準の判定表とトリガー移し替えの早見表。</td></tr>
+    <tr><td>references/review-checklist.md</td><td>⑤で使う独立レビューの観点（受動性検証・リスク洗い出し・破壊的操作チェック）。</td></tr>
+    <tr><td>assets/design-doc-template.md</td><td>①〜⑤を埋めていく設計書。工程の引継ぎファイルとして機能し、生成の入力になる。</td></tr>
+  </table>
+
+  <h2><span class="n">4.</span>実行フロー</h2>
+  <div class="flow">
+    <div class="box"><span class="s">STEP 1</span><b>ヒアリング</b><span>具体例を2〜3件。解決策はまだ聞かない</span></div>
+    <div class="box"><span class="s">STEP 2</span><b>深堀り</b><span>なぜなぜ＋Slack等の客観データで裏取り</span></div>
+    <div class="box"><span class="s">STEP 3</span><b>議論</b><span>受動/自動/低壁で検証・対案提示</span></div>
+    <div class="box gen"><span class="s">STEP 4</span><b>生成</b><span>設計書を確定しguided-skill-builderへ委譲</span></div>
+    <div class="box"><span class="s">STEP 5</span><b>レビュー</b><span>別エージェントが辛口で独立チェック</span></div>
+  </div>
+  <p>②の深堀りでは、なぜなぜが「本人の注意力・性格・やる気」に着地したら、そこで止めません。それは矯正できない<strong>前提</strong>として扱い、「ではその前提の下でも失敗しない仕組みは？」へ問いを切り替えます。客観データ照合は飾りではなく②の既定動作で、たとえば「請求書の登録忘れ」なら、Gmailの該当メール数と会計側の登録済みを突合して<strong>実際に月何件が未登録だったか</strong>を数え、自己申告とのズレを発見に変えます。</p>
+
+  <h2><span class="n">5.</span>工夫とハマりどころ</h2>
+  <p><strong>本人の自己申告すら疑う。</strong>「本人がそう言ったから」で原因を確定しないのが最大の設計判断です。自己認識と客観的痕跡がずれていたら、そのズレ自体が最重要の発見になります。</p>
+  <p><strong>「文面上は自動」の隠れ意識依存。</strong>レビュー観点にわざわざ入れているのが、これです。自動と書いてあっても、運用では本人の手動起動に頼っている——という退化を、独立レビューで見つけにいきます。</p>
+  <p><strong>通知疲れと破壊的操作。</strong>「異常時のみ通知」になっているか、自動で送信・更新・削除する箇所が「下書き止まり＋人の承認」になっているか。便利さがそのままリスクになる領域なので、チェックリストで機械的に潰します。</p>
+
+  <h2><span class="n">6.</span>まとめと応用</h2>
+  <p>苦手は直さなくていい。<strong>直せなかった前提で、本人が動かなくてもAIの相棒が肩代わりしてくれる形にする</strong>。そのために、生成そのものより「本質原因の特定」と「受動・自動・低壁での検証」に価値を置く——これがこのメタスキルの要点です。この「意識依存を排除し、トリガーを時間・イベントへ移す」という型は、個人の苦手フォローに限らず、チームの抜け漏れ防止や定期チェックの自動化にも横展開できます。</p>
+
+  <div class="related">
+    <div class="lbl">READ ALSO</div>
+    <a class="rl" href="weakness-follow-skill-builder_article_sns.html">
+      <span class="ic">SNS</span>
+      <span class="tx"><b>読み物版：苦手は直さない。仕組みで包む。</b>
+        <span>専門用語ぬきで、このスキルの発想をサクッと。</span></span>
+      <span class="go">→</span>
+    </a>
+  </div>
+
+  <h2>付録：全ファイルの中身</h2>
+  <p>対象スキルの実ソースです。社名など会社が特定できる固有名詞はマスクしています。</p>
+  <div class="files">
+  <details class="filebox">
+    <summary><span class="fn">weakness-follow-skill-builder/SKILL.md</span></summary>
+    <pre><code>---
+name: weakness-follow-skill-builder
+description: 個々人の「苦手なこと」をLLM（Claude）で仕組みとしてフォローするスキルを、深堀りを通じて設計・生成するためのメタスキル。「苦手をフォローするスキルを作りたい」「〇〇が苦手なのでClaudeで補いたい」「ミスを減らす仕組みを作って」「抜け漏れを防ぐスキルがほしい」「弱点を仕組みでカバーしたい」「自分（メンバー）の不得意を自動化でフォローしたい」と言われたら必ず使用してください。ユーザーの言う解決策をそのままスキル化せず、①苦手のヒアリング→②なぜなぜ＋Slack等の客観データ照合による本質的原因の特定→③第三者目線での解決策ディスカッション（受動的・自動化・低壁で意識に依存せず解決するか検証）→④設計書の確定＋guided-skill-builder（skill-creatorのラッパー）経由でのスキル生成→⑤別エージェントによるレビュー、という順で進めます。苦手の本人スキルに依存せず「仕組み」で解決するスキルを作ることが目的です。
+---
+
+# 苦手フォロー・スキルビルダー
+
+このスキルは、人の「苦手なこと」をClaudeで**仕組みとして**フォローするための、新しいスキルを設計・生成するメタスキルです。
+
+## 前提となる思想（最初に読む）
+
+- 苦手を本質的に矯正するのは難しい。だからLLMでうまくフォローし、**得意をより伸ばす**方向に時間を使うべき。
+- ユーザーが最初に口にする「苦手」や「こう解決したい」は、たいてい**表面的な症状**か、**意識・根性に頼った対策**であることが多い。そのまま鵜呑みにしてスキル化してはいけない。**本人の自己申告すら疑い、客観データ（Slack等）で裏を取る。**
+- **前提: これは「今までうまく解決できていない苦手」の改善である。** 本人はこれまで何度も直そうとして直せなかった。だから解決策は、本人が能動的に頑張ることを一切あてにしてはいけない。**本人が何もしなくても・行動を変えなくても・スキルが上達しなくても、解決に近づく**ものでなければならない。
+- 良いスキルの必須条件は、**①受動的（本人が能動的に動かなくても回る）②自動化（トリガーが人でなく時間/イベント）③壁が低い（起動・利用のコストがほぼゼロ）**の3点をすべて満たすこと。「気をつける」「忘れないようにする」「毎回チェックする」で終わる解決策は失敗とみなす。
+- だからこのスキルの本体は「客観データによる深堀りと第三者目線のディスカッション」にある。スキル生成（④）は最後の一手にすぎず、しかも**このスキルは生成を自前で行わず、必ず `guided-skill-builder`（skill-creator のラッパー）を呼び出して生成させる**。生成後は必ず別エージェントでレビュー（⑤）する。
+
+あなた（Claude）の役割は、優秀なコーチ兼システム設計者として、ユーザーの言葉を疑い、客観データで裏を取り、本質にたどり着き、本人が動かなくても回る仕組みまで設計することです。ユーザーに同意しすぎず、必要なら丁寧に反論してください。
+
+## 全体フロー
+
+以下の①〜⑤を**順番に**進めます。各ステップを飛ばさないこと。特に②③を省略して④に飛ぶのは、このスキルの価値をゼロにします。⑤（別エージェントレビュー）も省略しないこと。
+
+進行中は `assets/design-doc-template.md` をコピーして「設計書」を埋めながら進めると、後の生成が楽になります。
+
+---
+
+### ① 苦手ポイントのヒアリング（対象者の確認を含む）
+
+まず対象者を確認する。このスキルは自分にもチームメンバーにも使える。
+
+- **対象が本人以外（部下・メンバー）の場合**: 本人不在で決めつけると外れやすい。「本人にヒアリングできるか」「観察データ（後述）で裏を取れるか」を確認し、推測だけで進めないよう注意する。可能なら本人の言葉を集める。
+
+次に、苦手を具体化する。抽象的な自己申告（「マルチタスクが苦手」等）で止めず、**直近の具体的なエピソード**を2〜3個引き出す。
+
+聞くこと（AskUserQuestion等で1問ずつでよい）:
+- どんな場面で困っているか。直近の具体例は？
+- それによって何が起きたか（実害・手戻り・ストレス）。
+- 本人はなぜ起きると思っているか。
+- どのくらいの頻度で起きるか。
+- **これまでどう対策してきて、なぜ直らなかったか**（＝能動的対策が失敗してきた歴史。②③で「本人依存の案」を却下する根拠になる）。
+
+この段階では「解決策」は聞かない。まず現象を正確に把握する。
+
+---
+
+### ② 深堀り — 本質的な原因の特定（なぜなぜ ＋ 客観データ照合）
+
+ここがこのスキルの心臓部。表面的な課題を本質的な原因に変換する。手法の詳細は `references/deep-dive-methods.md` を読むこと。
+
+**改良の要点: 本人の言葉だけを根拠にしない。可能な限りSlack等の客観データと照らし合わせながらディスカッションする（対象が本人＝自己改善の場合でも同じ）。** 人は自分の苦手の原因を正確に自己申告できないことが多い。自己認識と客観的痕跡がズレていたら、それ自体が重要な発見。
+
+やること:
+
+1. **客観データ照合を&quot;標準の手順&quot;として先に試みる（既定ON）**: ②に入ったら、まず関連MCP（Slack / Notion / Gmail / カレンダー / Obsidian / GitHub / freee 等）の接続状況を確認し、**接続済みなら必ず実データを引きに行く**。本人が挙げた具体例に該当する実際のやり取り・履歴を探し、
+   - 頻度（本当は月何回か）、時間帯・曜日、関係者、直前の状況などを**数えられる事実**にする。
+   - 本人の自己申告を**裏付ける証拠と、反証する証拠の両方**を探す。都合の良い証拠だけ拾わない。
+   - データが本人の言葉とズレたら、遠慮なくユーザーに提示し「実際にはこうなっています。どう思いますか？」とディスカッションして原因を再定義する。
+   - **これは任意の飾りではなく、②の既定動作**。「本人がそう言ったから」で原因を確定しない。
+2. **なぜなぜ（5 Whys）**: ①の具体例と①で得た客観データに対し「なぜ？」を最低5回繰り返し、症状ではなく根本原因まで降りる。「本人の性格・能力・注意力のせい」で止めない。それは矯正困難＝仕組みで回避すべき制約として扱う。原因を「①注意・記憶の問題」「②情報・可視性の問題」「③手順・タイミングの問題」「④判断基準の問題」のどこかに分類すると仕組み化しやすい。
+3. **MCPが使えない／未接続の場合（フォールバック）**: 有用なソースが未接続なら接続を**推奨**する（例: Slack未接続なら「Slackを繋ぐと実際のやり取りから裏取りができ、原因特定の精度が上がります。設定→コネクタから接続できます」）。それでも使えない場合は、データ検証を諦めた旨を明示したうえで、ヒアリングで代替する（「その事象は月末に多い？」「直近3回の状況は？」等）＋該当メッセージのコピペを依頼する。**データが無いことを理由に②を止めない。**
+4. **本質原因の言語化**: 「本当の課題は &quot;◯◯&quot; である（客観データでは △△ という裏付けがある）」と1〜2文で言い切る。ユーザーに合意を取ってから③へ進む。
+
+**アンチパターン**: 「注意力が足りない」「意識が低い」で原因を止める／本人の自己申告だけで原因を確定する。どちらも必ずもう一段掘り、可能なら客観データで確かめる。
+
+---
+
+### ③ 解決策のディスカッション（第三者目線 ＋ 受動・自動・低壁チェック）
+
+ユーザーに「どう解決したいか」を聞く。そのうえで、鵜呑みにせず**第三者目線**で検証・議論する。詳細な設計パターンは `references/mechanism-patterns.md` を参照。
+
+**大前提（改良の要点）: これは「本人が能動的に頑張っても直せなかった苦手」である。** だから解決策は、本人の行動変容・意識・スキル向上を前提にしてはいけない。以下の**3必須基準をすべて満たす案だけ**を採用する。1つでも欠ければ却下し、満たす形に作り替える。
+
+- **【必須1】受動性**: 本人が能動的に何かをしなくても回るか？ 本人の役割は「通知を受け取る／最終承認する」程度の受け身に留まっているか。本人の起動アクションが前提の設計は不合格。
+- **【必須2】自動化**: トリガーが「人の気づき・記憶」ではなく「時間（スケジュール）」「イベント（受信・投稿・作成）」になっているか。Claudeが自動で検知・処理・生成するか。
+- **【必須3】低い壁**: 起動と利用のコストがほぼゼロか。特別な準備・複雑な操作・新しい習慣が要る案は、続かないので不合格。既存の業務動線・通知先（普段見ているSlack/メール等）に結果が届く形が理想。
+
+議論で必ず問うこと:
+
+1. **本当にそれで解決するか？** ユーザーの案が本質原因（②）に効いているか、症状にしか効かないか。
+2. **3必須基準（受動・自動・低壁）を満たすか？（最重要）** 「送信前に自分でチェックリストを見る」「毎回確認する」等、本人の意識・記憶・根性・行動に依存する案は**却下**。ユーザーが何もしなくても自動でトリガーされ機械的に処理され、結果が普段見る場所に届く形になっているか。
+   - 悪い例: 「送信前に自分でチェックする」→ 見忘れたら終わり（受動性×・低壁×）。
+   - 良い例: 「毎朝6時にClaudeが自動でチェックし、抜けがあればSlackにDM」→ 受動◎・自動◎・低壁◎。
+3. **より良い方法はないか？** ユーザー案とは別に、より受動的・自動的・低壁な対案をClaudeから1〜2個提示し比較する。トリガーを「人の意識」から「時間・イベント・自動チェック」に移せないか常に探す。
+4. **本人スキル非依存か？** できあがるスキルが、対象者の熟練度・当日のコンディション・やる気に左右されない設計か。
+
+このディスカッションを経て、「トリガー・入力・処理・出力・受動/自動/低壁を満たす根拠」が固まったら④へ。設計書に記入する。
+
+---
+
+### ④ スキルの生成
+
+②③で整理した設計書をもとに、実際のスキルを作る。**両建てで進める**:
+
+**(A) まず設計を確定する**
+
+`assets/design-doc-template.md` を埋め切り、ユーザーに最終確認を取る。特に以下を明確にする:
+- スキル名 / 何をするか / いつtrigger するか
+- **トリガー方式**: 手動呼び出し / スケジュール実行（毎朝など）/ イベント起点 のどれか。**受動・自動・低壁の3基準を満たせているか**。
+- 入力・処理・出力
+- 必要な外部連携（MCP）とセットアップ
+
+**(B) `guided-skill-builder` を呼び出してスキルを生成する（必須）**
+
+**SKILL.md を自前で手書きしない。** 確定した設計書を入力として、必ず `guided-skill-builder` スキル（`skill-creator` のラッパー）を呼び出し、生成を委ねる。`guided-skill-builder` は progressive disclosure・冪等性・引継ぎファイル・安全確認などの設計原則を強制しながら、内部で `skill-creator` の標準プロセス（ドラフト→テスト→評価→改善→パッケージ）を回す。`skill-creator` を直接呼ばず、必ず `guided-skill-builder` を経由すること。
+
+呼び出し時に `guided-skill-builder` へ渡すこと:
+- 確定済みの設計書（`assets/design-doc-template.md` を埋めたもの）の内容一式。
+- **②で特定した本質原因**と、**③で確定したトリガー方式（手動／スケジュール／イベント）・入力・処理・出力**、および**受動・自動・低壁の3必須基準を満たす根拠**。これらは生成され</code></pre>
+  </details>
+  <details class="filebox">
+    <summary><span class="fn">weakness-follow-skill-builder/assets/design-doc-template.md</span></summary>
+    <pre><code># 苦手フォロー・スキル 設計書
+
+&gt; ①〜③のディスカッションを通じて埋める。埋め切ってから④の生成に進み、⑤のレビュー結果も記録する。
+
+## ① 苦手ポイント（現象）
+- 対象者: （自分 / メンバー名）
+- 対象が本人以外の場合、本人の声・観察データで裏取りしたか: （はい / いいえ）
+- 具体的な苦手: 
+- 直近の具体例（2〜3件）:
+  1. 
+  2. 
+- 実害（手戻り・損失・ストレス）: 
+- 頻度: 
+- これまでの対策と、なぜ直らなかったか（＝能動的対策の失敗歴）: 
+
+## ② 本質的な原因（深堀り結果）
+- なぜなぜの到達点: 
+- **客観データ照合（既定ON）**:
+  - 使ったソース（Slack/Notion/Gmail/カレンダー/GitHub/freee 等）と接続状況: 
+  - データで分かった事実（頻度・時間帯・関係者・場面）: 
+  - 本人の自己申告との一致／ズレ: 
+  - （MCPが使えなかった場合）フォールバックで代替した内容: 
+- 原因の分類（注意記憶 / 情報可視性 / 手順タイミング / 判断基準）: 
+- **本質原因（1〜2文で断言・客観データの裏付け付き）**: 
+- ユーザー合意: （済 / 未）
+
+## ③ 解決策（第三者目線で検証済み）
+- ユーザーの当初案: 
+- 第三者目線での評価（症状対処か本質解決か）: 
+- **3必須基準チェック**:
+  - 受動性（本人が動かなくても回る）: （◎/△/× ＋理由）
+  - 自動化（トリガーが時間/イベント）: （◎/△/× ＋理由）
+  - 低い壁（起動・利用コストほぼゼロ）: （◎/△/× ＋理由）
+- 採用する解決策: 
+- 検討し</code></pre>
+  </details>
+  <details class="filebox">
+    <summary><span class="fn">weakness-follow-skill-builder/references/deep-dive-methods.md</span></summary>
+    <pre><code># 深堀り手法（② で使う）
+
+②の目的は、ユーザーが最初に言った「表面的な苦手」を、仕組みで解決できる**本質的な原因**に翻訳すること。以下を組み合わせて使う。
+
+**最重要の原則（改良）: 本人の言葉だけで原因を確定しない。可能な限りSlack等の客観データと照らし合わせながらディスカッションする。これは対象が本人（自己改善）の場合でも同じ。** 人は自分の苦手の原因を正確には自己申告できない。自己認識と客観データがズレたら、それ自体が最重要の発見。
+
+## 0. 客観データ照合を&quot;最初に&quot;試みる（既定ON・改良の核心）
+
+なぜなぜに入る前に、まず実データで現象を裏取りする姿勢を持つ。詳細手順はセクション4。ポイントだけ先に:
+
+- ②に入ったら、まず関連MCPの接続状況を確認し、**接続済みなら本人の具体例に該当する実際のやり取り・履歴を必ず引きに行く**。
+- 得たデータで「頻度・時間帯・関係者・直前の状況」を数えられる事実にし、本人の自己申告を裏付ける／反証する。
+- 本人の言葉とデータがズレたら、遠慮なく提示してディスカッションし、原因を再定義する。
+- MCPが無ければ接続を推奨しつつ、ヒアリング＋コピペで代替（止めない）。
+
+## 1. なぜなぜ分析（5 Whys）
+
+具体的なエピソードを1つ選び、「なぜ？」を最低5回繰り返す。**セクション0で得た客観データを各段の根拠に使う**（本人の記憶だけに頼らない）。
+
+- 抽象論（「マルチタスクが苦手」）ではなく、必ず**実際に起きた1件**から始める。
+- 各段で「本当にそれが原因か？他にないか？データはどう言っているか？」を自問する（Why は1本道とは限らない）。
+- **止めてはいけない地点**: 「本人の注意力・性格・やる気」に着地したら、それは原因ではなく&quot;前提&quot;。矯正できないものとして扱い、「ではその前提の下でも失敗しない仕組みは？」へ問いを切り替える。
+
+### 例
+- 事象: 請求書の登録を忘れた
+- なぜ①: メールで届いた請求書を見落とした
+- なぜ②: メールが大量で流れてしまう
+- なぜ③: 「登録すべき請求書」だけを抜き出す場所がない
+- なぜ④: 判別が人の記憶に依存している
+- なぜ⑤: 「届いた→登録済み」を突合する仕組みが存在しない
+- → 本質原因: **突合の仕組みが無く、検知が人の記憶に依存している**（→ 自動突合チェックで解決可能）
+- 客観データでの裏付け例: Gmailで「請求書」該当メールを数え、freeeの登録済みと突合 → 実際に月X件が未登録だった、を確認。
+
+## 2. 氷山モデル（症状 → 構造）
+
+見えている「出来事」の下に、繰り返す「パターン」、それを生む「構造」、その奥の「前提」がある。出来事だけを叩いても再発する。構造・前提に効く手を探す。
+
+- 出来事: 今回ミスした
+- パターン: 毎月月末に同種のミスが出る（← 客観データで頻度・時期を確認できると強い）
+- 構造: 月末にタスクが集中し、確認が後回しになる動線
+- 前提: 「自分で覚えて確認する」ことになっている
+- → 手を打つべきは「構造」と「前提」。仕組みで確認を動線に組み込む。
+
+## 3. 原因の4分類（仕組み化しやすくするための整理）
+
+本質原因を次のどれかに寄せると、打ち手が決まりやすい。
+
+1. **注意・記憶の問題**: 覚えていられない/見落とす → 自動リマインド・自動検知で代替。
+2. **情報・可視性の問題**: 必要な情報が散在/埋もれる → 集約・ダッシュボード化・要約で可視化。
+3. **手順・タイミングの問題**: いつ何をやるかが曖昧 → トリガーを固定（スケジュール/イベント）し手順を機械化。
+4. **判断基準の問題**: 良し悪しの基準が人によりブレる → 基準を明文化しClaudeに一次判定させる。
+
+## 4. 客観データによる裏付け・反証（改良: 任意→既定ONに格上げ）
+
+仮説は実データで検証し、ユーザー（本人）の発言だけを信じない。**これは②の既定動作。** ただし技術的にMCPが使えない場合はフォールバックで進める（データが無い</code></pre>
+  </details>
+  <details class="filebox">
+    <summary><span class="fn">weakness-follow-skill-builder/references/mechanism-patterns.md</span></summary>
+    <pre><code># 仕組み化 設計パターン（③④ で使う）
+
+大原則: **これは「本人が能動的に頑張っても直せなかった苦手」の改善である。** よって解決策は、本人の意識・記憶・根性・行動変容・スキル向上に一切依存してはいけない。人が何もしなくても、あるいは普段の動線の中で、自動的に起動し機械的に処理され、結果が普段見る場所に届く形にする。
+
+## 3必須基準（改良の核心・すべて満たすこと）
+
+以下を**すべて**満たす案だけを採用する。1つでも欠けたら却下し、満たす形に作り替える。
+
+| 基準 | 問い | NG例 | OK例 |
+|---|---|---|---|
+| **①受動性** | 本人が能動的に動かなくても回るか？本人の役割は受け取る/承認する程度か | 本人が思い出して起動する | スケジュールで自動起動し結果が届く |
+| **②自動化** | トリガーが人の記憶でなく時間/イベントか。検知・処理・生成をClaudeがやるか | 本人が判断してから動く | 受信/投稿/時刻を検知して自動処理 |
+| **③低い壁** | 起動・利用コストがほぼゼロか。新しい習慣や複雑な操作が要らないか | 専用アプリを毎回開く | 普段見るSlack/メールに結果が届く |
+
+### 判定チェック（1つでもYESなら意識依存＝作り直し）
+- 「本人が&quot;忘れずに&quot;何かをする」ことが前提になっていないか？
+- 「本人が正しく判断する」ことが前提になっていないか？
+- トリガー（起動のきっかけ）が「人の気づき」になっていないか？
+- 利用のために本人が新しい習慣・操作・準備を覚える必要がないか？（＝壁が高い）
+
+## トリガーの移し替え（受動・自動を実現する核心）
+
+意識依存を排除する鍵は、トリガーを「人の意識」から次のいずれかに移すこと。
+
+| トリガー種別 | いつ起動 | 実現手段 | 受動/自動/低壁 | 向いているケース |
+|---|---|---|---|---|
+| スケジュール | 毎朝/毎週/月末など固定時刻 | `mcp__scheduled-tasks__create_scheduled_task`（cron） | ◎/◎/◎ | 定期チェック・締め作業・棚卸し |
+| イベント起点 | メール受信/メッセージ投稿など | MCPの受信データを定期ポーリング＋差分検知 | ◎/◎/○ | 届いた/変わったことへの反応 |
+| 動線内呼び出し | 既存作業の一部として必ず通る | 既存スキル/手順に組み込む | ○/△/◎ | 送信前チェック等、作業に内包できるもの |
+| 手動＋強力な発火語 | 本人が呼ぶ | SKILL.md descriptionを網羅的に | △/×/○ | 上記が難しい補助的用途 |
+
+優先順位: **スケジュール／イベント ＞ 動線内 ＞ 手動**。手動は受動性・自動化を満たせないので、原則、最後の手段。手動しか無理な場合でも、descriptionを工夫し発火漏れを減らす＋できるだけ動線内に埋め込む。
+
+## 「壁を下げる」具体テクニック（改良で重視）
+
+- 結果の届け先を**本人が普段必ず見る場所**にする（Slack DM / メール / 毎朝のデイリー</code></pre>
+  </details>
+  <details class="filebox">
+    <summary><span class="fn">weakness-follow-skill-builder/references/review-checklist.md</span></summary>
+    <pre><code># 別エージェント・レビュー観点（⑤ で使う）
+
+④で生成したスキルを、**独立したサブエージェント**にレビューさせるための観点集。メインの文脈は自分の設計を肯定しがちなので、第三者の目で改善点とリスクを洗い出すのが目的。
+
+## サブエージェントへの渡し方
+
+- `Agent` ツール（`subagent_type: &quot;general-purpose&quot;` 等）を起動する。
+- プロンプトに、生成した `SKILL.md` 本文・references・設計書（design-doc）の内容を貼り付ける。
+- 「あなたは独立レビュアーです。設計者に忖度せず、辛口で改善点とリスクを挙げてください」と明示する。
+- 下記チェックリストを渡し、各項目に ○/△/× と理由、改善提案（優先度: 高/中/低）を返させる。
+
+## A. 3必須基準の検証（最重要）
+
+1. **受動性**: 本人が能動的に動かなくても回るか。本人の起動アクションが前提になっていないか。
+2. **自動化**: トリガーが時間/イベントか。「人が気づいて呼ぶ」設計に退化していないか。
+3. **低い壁**: 起動・利用コストがほぼゼロか。新しい習慣・複雑な操作・わざわざ開く画面を要求していないか。結果は本人が普段見る場所に届くか。
+4. これらが「文面上は自動」でも、実際の運用で本人の手動起動に頼っていないか（隠れ意識依存）。
+
+## B. 本質への効き目
+
+5. ②で特定した本質原因に実際に効くか。症状対処で終わっていないか。
+6. 原因の裏付け（客観データ）が設計に反映されているか。想定頻度・場面に合ったトリガーか。
+
+## C. リスクの洗い出し
+
+7. **誤検知/見逃し**: 検知ロジックが緩すぎ/厳しすぎないか。見逃したら被害が大きい箇所はどこか。
+8. **過剰通知（通知疲れ）**: 通知が多すぎて無視されないか。「異常時のみ通知」になっているか。
+9. **権限・プライバシー**: 他人のデータ（Slack/メール等）を読む場合、範囲は適切か。同意は取れているか。
+10. **破壊的操作**: 自動で送信・更新・削除・登録をする箇所はないか。あるなら「下書き止まり＋人の承認」になっているか。
+11. **MCP未接続/障害時**: コネクタが無い・落ちているときに壊れず、フォールバックで動くか。
+12. **スケジュール暴発**: cronの頻度・時刻は妥当か。多重起動・無限ループの恐れはないか。
+13. **description**: 発火漏れ（呼ばれるべきで呼ばれない）や過剰発火（無関係でも発火）はないか。
+
+## D. 堅牢性・保守性
+
+14. 本人スキル・当日のコンディション・やる気に依存する部分が残っていないか。
+15. 判断基準は明文化されClaudeが再現できるか。出力フォーマットは固定か。
+16. セットアップ手順（スケジュール・MCP）が明記され、一度設定すれば以後ゼロ操作か。
+
+## E. 総合
+
+17. 最大のリスクは何か（1つ挙げる）。
+18. 最優先の改善提案は何か（1つ挙げる）。
+19. このまま運用してよいか（Go / 条件付きGo / 要修正）。
+
+## レビュー後の処理
+
+- サブエージェントの指摘のうち、優先度「高」は必ず反映して `SKILL.md` を修正する。
+- 重大な指摘（権限・破壊的操作・大きな見逃しリスク等）はユーザーに共有し、判断を仰ぐ。
+- レビュー結果と対応を、設計書の「⑤ レビュー結果」欄に記録する。
+</code></pre>
+  </details>
+  </div>
+
+
+  <div class="foot">Claude Skill「苦手フォロー・ビルダー」技術解説。記載内容とソースはスキル本体にもとづきます（配布時は images/ を同階層に置いてください）。</div>
+</div>
+
+</body>
+</html>
