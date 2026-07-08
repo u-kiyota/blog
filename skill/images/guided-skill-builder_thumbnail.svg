@@ -1,0 +1,82 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans CJK JP','Segoe UI',sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f1226"/>
+      <stop offset="0.55" stop-color="#171a3a"/>
+      <stop offset="1" stop-color="#241947"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7c5cff"/>
+      <stop offset="1" stop-color="#31d0aa"/>
+    </linearGradient>
+    <linearGradient id="core" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2a2f5c"/>
+      <stop offset="1" stop-color="#1b1f42"/>
+    </linearGradient>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="14" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="9"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <g stroke="#ffffff" stroke-opacity="0.04">
+    <path d="M0 158 H1200 M0 316 H1200 M0 474 H1200 M300 0 V630 M600 0 V630 M900 0 V630"/>
+  </g>
+
+  <g transform="translate(72,66)">
+    <rect x="0" y="0" width="230" height="40" rx="20" fill="#ffffff" fill-opacity="0.08" stroke="url(#accent)" stroke-width="1.5"/>
+    <circle cx="26" cy="20" r="6" fill="#31d0aa"/>
+    <text x="46" y="26" fill="#c7cbf5" font-size="18" font-weight="600" letter-spacing="1">Claude Skill</text>
+  </g>
+
+  <text x="72" y="196" fill="#ffffff" font-size="72" font-weight="800" letter-spacing="-1">guided-skill-builder</text>
+  <text x="74" y="262" fill="url(#accent)" font-size="40" font-weight="800">「作って終わり」にしない、育つスキルの作り方</text>
+  <text x="74" y="312" fill="#aeb3e0" font-size="24" font-weight="500">skill-creator に“運用に耐える設計原則”を注入するラッパースキル</text>
+
+  <g transform="translate(72,372)">
+    <g>
+      <rect x="0" y="30" width="196" height="150" rx="18" fill="url(#core)" stroke="#3a3f75" stroke-width="1.5"/>
+      <text x="98" y="66" text-anchor="middle" fill="#8f95d6" font-size="15" font-weight="600" letter-spacing="1">標準</text>
+      <text x="98" y="108" text-anchor="middle" fill="#ffffff" font-size="21" font-weight="800">skill-</text>
+      <text x="98" y="136" text-anchor="middle" fill="#ffffff" font-size="21" font-weight="800">creator</text>
+      <text x="98" y="164" text-anchor="middle" fill="#7c81bf" font-size="13">ドラフト→評価→梱包</text>
+    </g>
+
+    <g transform="translate(214,105)">
+      <text x="0" y="8" fill="url(#accent)" font-size="46" font-weight="800">+</text>
+    </g>
+
+    <g transform="translate(276,20)">
+      <rect x="0" y="0" width="330" height="170" rx="18" fill="#ffffff" fill-opacity="0.05" stroke="url(#accent)" stroke-width="2"/>
+      <text x="24" y="40" fill="#ffffff" font-size="20" font-weight="800">設計原則を注入</text>
+      <g fill="#d5d9ff" font-size="15.5" font-weight="600">
+        <text x="24" y="74">・progressive disclosure</text>
+        <text x="24" y="100">・冪等性 / 引継ぎファイル</text>
+        <text x="24" y="126">・品質ゲート / 承認ゲート</text>
+        <text x="24" y="152">・自己改善ループ（育つ）</text>
+      </g>
+    </g>
+
+    <g transform="translate(626,105)">
+      <path d="M0 0 H70" stroke="url(#accent)" stroke-width="6" stroke-linecap="round"/>
+      <path d="M62 -12 L84 0 L62 12 Z" fill="#31d0aa"/>
+    </g>
+
+    <g transform="translate(724,20)" filter="url(#soft)">
+      <rect x="0" y="0" width="320" height="170" rx="20" fill="url(#accent)"/>
+      <text x="28" y="52" fill="#0f1226" font-size="22" font-weight="800">運用に耐えるスキル</text>
+      <g fill="#0f1226" font-size="16" font-weight="700" opacity="0.92">
+        <text x="28" y="90">再実行しても壊れない</text>
+        <text x="28" y="120">引き継げる・安全確認つき</text>
+        <text x="28" y="150">使いながら育つ</text>
+      </g>
+    </g>
+  </g>
+
+  <circle cx="1120" cy="90" r="70" fill="#7c5cff" opacity="0.18" filter="url(#glow)"/>
+  <circle cx="1150" cy="150" r="40" fill="#31d0aa" opacity="0.16" filter="url(#glow)"/>
+</svg>
