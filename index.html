@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>記事 index</title>
+  <style>
+    :root{
+      --bg:#0f1226; --panel:#1a1e40; --panel2:#20244d;
+      --ink:#eef0ff; --sub:#aeb3e0; --muted:#8288c0;
+      --line:#2c3163; --violet:#7c5cff; --teal:#31d0aa;
+      --grad:linear-gradient(90deg,#7c5cff,#31d0aa);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:'Noto Sans JP','Hiragino Kaku Gothic ProN','Segoe UI',system-ui,sans-serif;
+      background:radial-gradient(1200px 700px at 80% -10%,#241947 0%,var(--bg) 55%);
+      color:var(--ink);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      -webkit-font-smoothing:antialiased;
+    }
+    .frame{
+      max-width:900px;
+      width:100%;
+      padding:32px 24px 40px;
+    }
+    .card{
+      background:linear-gradient(180deg,var(--panel2),var(--panel));
+      border-radius:18px;
+      border:1px solid var(--line);
+      box-shadow:0 28px 70px rgba(0,0,0,.55);
+      padding:26px 26px 24px;
+    }
+    h1{
+      margin:0 0 6px;
+      font-size:1.5rem;
+      letter-spacing:-.01em;
+    }
+    .desc{
+      margin:0 0 20px;
+      color:var(--sub);
+      font-size:.9rem;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:.9rem;
+    }
+    th,td{
+      text-align:left;
+      padding:8px 10px;
+    }
+    th{
+      font-size:.78rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+      border-bottom:1px solid var(--line);
+    }
+    td{
+      border-bottom:1px solid rgba(44,49,99,.7);
+      vertical-align:middle;
+    }
+    tbody tr:last-child td{
+      border-bottom:none;
+    }
+    .title{
+      font-weight:600;
+      color:#fff;
+      font-size:.92rem;
+    }
+    .type-links{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:.78rem;
+      text-decoration:none;
+      color:#eef0ff;
+      background:#20244d;
+      border:1px solid #2c3163;
+      transition:background .15s,border-color .15s,transform .08s;
+    }
+    .pill span.label{
+      font-weight:600;
+      letter-spacing:.03em;
+    }
+    .pill--sns{
+      background:radial-gradient(circle at 0 0,#ff6ea8 0,#7c5cff 40%,#20244d 100%);
+      border-color:#7c5cff;
+    }
+    .pill--blog{
+      background:radial-gradient(circle at 0 0,#31d0aa 0,#7c5cff 40%,#20244d 100%);
+      border-color:#31d0aa;
+    }
+    .pill--tech{
+      background:radial-gradient(circle at 0 0,#31d0aa 0,#58d0ff 40%,#20244d 100%);
+      border-color:#58d0ff;
+    }
+    .pill small{
+      opacity:.8;
+      font-size:.74rem;
+    }
+    .pill:focus-visible,
+    .pill:hover{
+      outline:none;
+      border-color:#eef0ff;
+      transform:translateY(-1px);
+    }
+    @media(max-width:640px){
+      .card{padding:22px 18px;}
+      table{font-size:.88rem;}
+      th:nth-child(2){width:52%;}
+      th:nth-child(3){width:48%;}
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <main class="card">
+      <h1>記事インデックス</h1>
+      <p class="desc">同じテーマの記事は1行にまとめ、右側で「SNS 記事」「Blog / 技術記事」を選べるようにしています。</p>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">テーマ</th>
+            <th scope="col">タイトル</th>
+            <th scope="col">タイプ別リンク</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>claude skill</td>
+            <td class="title">「苦手」はAIの相棒に助けてもらう — 苦手フォロー・ビルダー</td>
+            <td>
+              <div class="type-links">
+                <a class="pill pill--sns" href="skill/weakness-follow-skill-builder_article_sns.html">
+                  <span class="label">SNS 記事</span>
+                  <small>短く要点だけ</small>
+                </a>
+                <a class="pill pill--blog" href="skill/weakness-follow-skill-builder_article_blog.html">
+                  <span class="label">Blog 記事</span>
+                  <small>詳細な解説</small>
+                </a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>claude skill</td>
+            <td class="title">「作って終わり」にしないスキルづくり — guided-skill-builder のすすめ</td>
+            <td>
+              <div class="type-links">
+                <a class="pill pill--blog" href="skill/guided-skill-builder-article.html">
+                  <span class="label">Blog 記事</span>
+                  <small>コンセプト / 概要</small>
+                </a>
+                <a class="pill pill--tech" href="skill/guided-skill-builder_article_techblog.html">
+                  <span class="label">技術ブログ</span>
+                  <small>実装の詳細</small>
+                </a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+  </div>
+</body>
+</html>
