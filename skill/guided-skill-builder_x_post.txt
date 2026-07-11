@@ -1,0 +1,27 @@
+作ったAIスキル、数か月後に動かして「壊れてる」と焦ったことありませんか？
+
+guided-skill-builder は、skill-creator に設計原則を強制注入して、運用に耐えるスキルを生成する Claude スキルです。
+
+こんな人に:
+・作りっぱなしで壊れるスキルに困っている人
+・チームでスキルを引き継ぎ・量産したい人
+
+できること:
+・progressive disclosure・冪等性など設計原則を毎回自動適用
+・別エージェントの独立レビュー＋人の承認で品質を担保
+・使うたびに改善を提案し、CHANGELOGで育てる
+
+使い方は話しかけるだけ:
+「この作業を自動化するスキルを作って」
+
+---
+
+Before → After
+使う前: 一度作って終わり、再実行で壊れ引き継げない
+使った後: 壊れず・引き継げて・改善しながら育つスキルに
+
+詳しい解説はブログに書きました。
+（技術者向け: guided-skill-builder_tech_blog.html ／ 非エンジニア向け: guided-skill-builder_business_blog.html）
+※投稿時はサムネ画像 images/guided-skill-builder_thumbnail.png を添付
+
+#ClaudeCode #Claude #生成AI

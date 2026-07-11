@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>「気をつけます」で終わらせない — 苦手をチームの仕組みで吸収する</title>
+<style>
+  :root{
+    --bg:#0f1226; --panel:#1a1e40; --panel2:#20244d;
+    --ink:#eef0ff; --sub:#aeb3e0; --muted:#8288c0;
+    --line:#2c3163; --violet:#7c5cff; --teal:#31d0aa;
+    --grad:linear-gradient(90deg,#7c5cff,#31d0aa);
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:radial-gradient(1200px 700px at 80% -10%,#241947 0%,var(--bg) 55%);
+    color:var(--ink); line-height:1.85;
+    font-family:'Noto Sans JP','Hiragino Kaku Gothic ProN','Segoe UI',sans-serif;
+    -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:860px; margin:0 auto; padding:0 22px 96px}
+  .hero{max-width:1040px; margin:0 auto; padding:34px 22px 8px}
+  .hero svg,.hero img{width:100%; height:auto; display:block; border-radius:20px;
+    box-shadow:0 30px 80px rgba(0,0,0,.5); border:1px solid var(--line)}
+  h1{font-size:2.05rem; line-height:1.35; margin:44px 0 6px; letter-spacing:-.01em}
+  h2{font-size:1.45rem; margin:56px 0 6px}
+  h2 .n{color:var(--teal); font-weight:800; margin-right:.5em}
+  h3{font-size:1.08rem; margin:0 0 6px}
+  p{margin:14px 0; color:#dfe2ff}
+  .lead{font-size:1.12rem; color:var(--sub)}
+  .kicker{display:inline-flex; align-items:center; gap:8px; margin-top:8px;
+    padding:6px 14px; border:1px solid var(--violet); border-radius:999px;
+    font-size:.8rem; color:#cdd1ff; background:rgba(124,92,255,.08)}
+  .kicker::before{content:""; width:8px;height:8px;border-radius:50%;background:var(--teal)}
+  strong{color:#fff}
+  .accent{background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:800}
+  .callout{margin:26px 0; padding:20px 22px; border-radius:16px;
+    background:linear-gradient(180deg,rgba(124,92,255,.12),rgba(49,208,170,.06));
+    border:1px solid var(--line); border-left:4px solid var(--violet)}
+  .callout p{margin:0; color:#eceeff}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:22px 0}
+  .card{background:linear-gradient(180deg,var(--panel2),var(--panel));
+    border:1px solid var(--line); border-radius:16px; padding:18px 20px}
+  .card .tag{font-size:.72rem; font-weight:800; letter-spacing:.1em; color:var(--teal)}
+  .card h3{margin:6px 0 8px; font-size:1.02rem}
+  .card p{margin:0; font-size:.94rem; color:var(--sub); line-height:1.7}
+  .flow{display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:12px; align-items:stretch; margin:24px 0}
+  .flow .box{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px; text-align:center}
+  .flow .box b{display:block; font-size:.98rem; margin-bottom:4px}
+  .flow .box span{font-size:.82rem; color:var(--muted)}
+  .flow .arrow{align-self:center; color:var(--teal); font-size:1.5rem; font-weight:800}
+  .flow .box.out{background:var(--grad); border:0}
+  .flow .box.out b, .flow .box.out span{color:#0f1226}
+  ul.clean{list-style:none; padding:0; margin:16px 0}
+  ul.clean li{position:relative; padding:10px 0 10px 30px; border-bottom:1px dashed var(--line); color:#e4e6ff}
+  ul.clean li::before{content:"✓"; position:absolute; left:0; top:10px; color:var(--teal); font-weight:800}
+  ul.clean li:last-child{border-bottom:0}
+  .ba{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:22px 0}
+  .ba .col{border-radius:16px; padding:18px 20px; border:1px solid var(--line)}
+  .ba .before{background:rgba(255,255,255,.03)}
+  .ba .after{background:linear-gradient(180deg,rgba(49,208,170,.12),rgba(124,92,255,.08)); border-color:#38507a}
+  .ba h4{margin:0 0 10px; font-size:.95rem}
+  .ba .before h4{color:#ff8f9a}
+  .ba .after h4{color:var(--teal)}
+  .ba ul{margin:0; padding-left:18px}
+  .ba li{margin:7px 0; font-size:.92rem; color:var(--sub)}
+  .quote{margin:24px 0; padding:16px 20px; border-radius:14px; background:#12152e;
+    border:1px solid var(--line); font-family:'Consolas','SF Mono',monospace; color:#cdd1ff; font-size:.95rem}
+  .quote span{color:var(--teal)}
+  .cta{margin:52px 0 0; padding:30px; border-radius:20px; text-align:center;
+    background:linear-gradient(135deg,#241947,#171a3a); border:1px solid var(--line)}
+  .cta h2{margin:0 0 8px; border:0}
+  .cta p{color:var(--sub)}
+  .cta .pill{display:inline-block; margin-top:14px; padding:12px 26px; border-radius:999px;
+    background:var(--grad); color:#0f1226; font-weight:800; font-size:1rem}
+  .foot{margin-top:40px; color:var(--muted); font-size:.82rem; text-align:center}
+  @media(max-width:680px){
+    h1{font-size:1.6rem} h2{font-size:1.25rem}
+    .grid,.ba{grid-template-columns:1fr}
+    .flow{grid-template-columns:1fr}
+    .flow .arrow{transform:rotate(90deg)}
+  }
+  .related{margin:40px 0 0}
+  .related .lbl{font-size:.75rem;font-weight:800;letter-spacing:.12em;color:var(--teal)}
+  .related a.rl{display:flex;align-items:center;gap:14px;margin-top:10px;padding:16px 18px;border:1px solid var(--line);border-radius:14px;text-decoration:none;color:var(--ink);background:linear-gradient(180deg,var(--panel2),var(--panel));transition:border-color .15s}
+  .related a.rl:hover{border-color:#38507a}
+  .related a.rl .ic{flex:0 0 auto;font-family:'Consolas',monospace;font-size:.7rem;font-weight:800;letter-spacing:.08em;color:#0f1226;background:var(--grad);padding:5px 8px;border-radius:7px}
+  .related a.rl .tx b{display:block;font-size:1rem}
+  .related a.rl .tx span{font-size:.85rem;color:var(--sub)}
+  .related a.rl .go{margin-left:auto;color:var(--teal);font-weight:800}
+  .files{margin:18px 0 8px}
+  details.filebox{border:1px solid var(--line);border-radius:12px;background:#12152e;margin:10px 0;overflow:hidden}
+  details.filebox summary{cursor:pointer;list-style:none;padding:13px 16px;background:linear-gradient(180deg,var(--panel2),var(--panel))}
+  details.filebox summary::-webkit-details-marker{display:none}
+  details.filebox summary::before{content:'\25B8';color:var(--teal);float:right;margin-left:12px;transition:transform .15s}
+  details.filebox[open] summary::before{transform:rotate(90deg)}
+  details.filebox .fn{font-family:'Consolas',monospace;color:#a5f3dc;font-size:.92rem;font-weight:700}
+  details.filebox pre{margin:0;border:0;border-top:1px solid var(--line);border-radius:0;max-height:460px;overflow:auto;background:#0c0f24;padding:16px 18px}
+  details.filebox pre code{color:#cdd1ff;font-size:.84rem;font-family:'Consolas',monospace}
+</style>
+</head>
+<body>
+
+<!-- ===== サムネイル（一枚絵）: images/ 内の画像を参照 ===== -->
+<div class="hero">
+  <img class="thumb" src="images/weakness-follow-skill-builder_thumbnail.png" alt="weakness-follow-skill-builder サムネイル" width="1200" height="630">
+</div>
+
+<div class="wrap">
+  <span class="kicker">Claude Skill / 非エンジニア向け</span>
+
+  <!-- 本文: references/article-templates.md の該当種（種2=テック / 種3=ビジネス）の構成で組み立てる。
+       この雛形は HTML2種（tech_blog / business_blog）で共用する。
+       目安ブロック: フック見出し(h1) / lead / callout / flow / grid(カード) /
+       quote(話しかけ例) / ba(Before-After) / cta。不要なブロックは削る。 -->
+  <h1>「気をつけます」で終わらせない — <span class="accent">苦手をチームの仕組みで吸収する</span></h1>
+  <p class="lead">同じミスが繰り返される。注意を促しても、しばらくするとまた起きる。個人の努力や意識に頼る改善は、たいてい長続きしません。weakness-follow-skill-builder は、人の苦手を「本人が頑張る」のではなく「仕組みが自動でフォローする」形に変えるための設計スキルです。</p>
+
+  <div class="callout"><p>発想の転換はシンプルです。苦手を無理に矯正するのではなく、<strong>本人が何もしなくても回る仕組みでカバーし、得意な仕事に集中してもらう</strong>。</p></div>
+
+  <h2><span class="n">01</span>よくある業務課題</h2>
+  <p>「請求書の登録漏れ」「返信忘れ」「確認の抜け」——こうした苦手は、本人が一番気にしています。それでも直らないのは、能力の問題ではなく、意識や記憶に頼る対策そのものが続かないからです。チェックリストを作っても、見るのを忘れれば意味がありません。</p>
+
+  <h2><span class="n">02</span>このスキルのアプローチ</h2>
+  <p>まず「なぜ起きるのか」を、本人の思い込みではなくSlackなどの実際の記録で確かめます。人は自分の苦手の原因を正確には言えないことが多く、事実と食い違えばそれ自体が重要な発見です。そのうえで、本人の行動に頼らない解決策だけを採用します。</p>
+
+  <div class="grid">
+    <div class="card"><div class="tag">受動的</div><h3>本人は待つだけ</h3><p>能動的な操作は不要。役割は通知を受け取り、必要なら承認するだけ。</p></div>
+    <div class="card"><div class="tag">自動</div><h3>時間やイベントで起動</h3><p>「人が思い出す」に頼らず、決まった時刻や出来事をきっかけに自動で動く。</p></div>
+    <div class="card"><div class="tag">低い壁</div><h3>いつもの場所に届く</h3><p>新しい習慣は不要。結果は普段見ているSlackやメールにそのまま届く。</p></div>
+    <div class="card"><div class="tag">事実ベース</div><h3>思い込みを排除</h3><p>実データで頻度や状況を確かめ、本当の原因に効く対策だけを残す。</p></div>
+  </div>
+
+  <h2><span class="n">03</span>導入効果</h2>
+  <div class="ba">
+    <div class="col before"><h4>これまで</h4><ul><li>注意喚起しても再発する</li><li>本人のコンディション次第でブレる</li><li>「本人の努力不足」で片づけられる</li></ul></div>
+    <div class="col after"><h4>これから</h4><ul><li>仕組みが自動で検知して通知</li><li>本人のスキルや調子に左右されない</li><li>苦手を責めず、得意に集中できる</li></ul></div>
+  </div>
+  <p>たとえば「毎朝6時に自動でチェックし、抜けがあればSlackにお知らせ」。本人は普段どおり働くだけで、苦手がそっとフォローされます。属人的な「気合い」を、再現性のある「仕組み」に置き換えるのが狙いです。</p>
+
+  <h2><span class="n">04</span>横展開のイメージ</h2>
+  <p>特定の人の特定の苦手だけでなく、チーム全体の「うっかり」に応用できます。誰の・どんな苦手でも、同じ手順（実データで原因を確かめ、本人が動かなくても回る形に設計する）で仕組み化できるのが強みです。</p>
+
+  <div class="cta"><h2>はじめかた</h2><p>直したいのに直せない苦手を、そのまま伝えてください。</p><span class="pill">「ミスを減らす仕組みを作って」</span></div>
+<div class="related">
+  <div class="lbl">別バージョン</div>
+  <a class="rl" href="weakness-follow-skill-builder_tech_blog.html">
+    <span class="ic">TECH</span>
+    <span class="tx"><b>技術者向け：設計と仕組みを詳しく</b><span>設計思想・ファイル構造・実行フロー。全ファイルの中身も掲載。</span></span>
+    <span class="go">&#8594;</span>
+  </a>
+</div>
+  <!-- 相互リンク: CTA とフッターの間に .related を差し込む。
+       ビジネス版→テック版（ラベル TECH）／テック版→ビジネス版（ラベル BIZ）。 -->
+  <!-- テックブログ版のみ: まとめ／相互リンクの後、フッターの前に
+       scripts/embed_sources.py の出力（.files 内 <details>群）を差し込む。ビジネス版には載せない。 -->
+
+  <div class="foot">weakness-follow-skill-builder — 非エンジニア向け紹介記事。固有名詞は汎化しています。</div>
+</div>
+
+</body>
+</html>

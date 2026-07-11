@@ -1,0 +1,27 @@
+「気をつけます」で直った苦手、ありますか？ ほとんど直らないですよね。
+
+weakness-follow-skill-builder は、人の苦手を、意識や根性ではなく“仕組み”でフォローするスキルを設計・生成する Claude スキルです。
+
+こんな人に:
+・同じミスが再発して困っている人・チーム
+・メンバーの苦手を仕組みでカバーしたいマネージャー
+
+できること:
+・Slack等の客観データで“本当の原因”を裏取り
+・なぜなぜで根本原因まで深堀り（自己申告を鵜呑みにしない）
+・受動・自動・低壁の3基準を満たす形だけ採用
+
+使い方は話しかけるだけ:
+「〇〇が苦手なのでClaudeで補いたい」
+
+---
+
+Before → After
+使う前: 意識・根性頼みの対策で毎回すり抜ける
+使った後: 本人が動かなくても自動で検知し、普段のSlackに通知
+
+詳しい解説はブログに書きました。
+（技術者向け: weakness-follow-skill-builder_tech_blog.html ／ 非エンジニア向け: weakness-follow-skill-builder_business_blog.html）
+※投稿時はサムネ画像 images/weakness-follow-skill-builder_thumbnail.png を添付
+
+#ClaudeCode #Claude #生成AI

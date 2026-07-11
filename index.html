@@ -24,7 +24,7 @@
       -webkit-font-smoothing:antialiased;
     }
     .frame{
-      max-width:900px;
+      max-width:960px;
       width:100%;
       padding:32px 24px 40px;
     }
@@ -52,7 +52,7 @@
     }
     th,td{
       text-align:left;
-      padding:8px 10px;
+      padding:10px 10px;
     }
     th{
       font-size:.78rem;
@@ -82,7 +82,7 @@
       display:inline-flex;
       align-items:center;
       gap:6px;
-      padding:6px 10px;
+      padding:6px 12px;
       border-radius:999px;
       font-size:.78rem;
       text-decoration:none;
@@ -95,22 +95,24 @@
       font-weight:600;
       letter-spacing:.03em;
     }
-    .pill--sns{
-      background:radial-gradient(circle at 0 0,#ff6ea8 0,#7c5cff 40%,#20244d 100%);
-      border-color:#7c5cff;
-    }
-    .pill--blog{
-      background:radial-gradient(circle at 0 0,#31d0aa 0,#7c5cff 40%,#20244d 100%);
-      border-color:#31d0aa;
+    .pill--x{
+      background:radial-gradient(circle at 0 0,#e8eaf2 0,#8b93b8 45%,#20244d 100%);
+      border-color:#c7cbf5;
+      color:#0f1226;
     }
     .pill--tech{
       background:radial-gradient(circle at 0 0,#31d0aa 0,#58d0ff 40%,#20244d 100%);
       border-color:#58d0ff;
     }
+    .pill--biz{
+      background:radial-gradient(circle at 0 0,#ffb36e 0,#7c5cff 45%,#20244d 100%);
+      border-color:#7c5cff;
+    }
     .pill small{
-      opacity:.8;
+      opacity:.85;
       font-size:.74rem;
     }
+    .pill--x small{opacity:.7;}
     .pill:focus-visible,
     .pill:hover{
       outline:none;
@@ -120,8 +122,6 @@
     @media(max-width:640px){
       .card{padding:22px 18px;}
       table{font-size:.88rem;}
-      th:nth-child(2){width:52%;}
-      th:nth-child(3){width:48%;}
     }
   </style>
 </head>
@@ -129,7 +129,7 @@
   <div class="frame">
     <main class="card">
       <h1>記事インデックス</h1>
-      <p class="desc">同じテーマの記事は1行にまとめ、右側で「SNS 記事」「Blog / 技術記事」を選べるようにしています。</p>
+      <p class="desc">同じテーマの記事は1行にまとめ、右側で「X 投稿文」「Tech（技術者向け）」「Biz（非エンジニア向け）」の3種を選べます。</p>
       <table>
         <thead>
           <tr>
@@ -141,32 +141,40 @@
         <tbody>
           <tr>
             <td>claude skill</td>
-            <td class="title">「苦手」はAIの相棒に助けてもらう — 苦手フォロー・ビルダー</td>
+            <td class="title">「苦手」を仕組みでフォロー — weakness-follow-skill-builder</td>
             <td>
               <div class="type-links">
-                <a class="pill pill--sns" href="skill/weakness-follow-skill-builder_article_sns.html">
-                  <span class="label">SNS 記事</span>
-                  <small>短く要点だけ</small>
+                <a class="pill pill--x" href="skill/weakness-follow-skill-builder_x_post.txt">
+                  <span class="label">X 投稿文</span>
+                  <small>そのまま貼れる</small>
                 </a>
-                <a class="pill pill--blog" href="skill/weakness-follow-skill-builder_article_blog.html">
-                  <span class="label">Blog 記事</span>
-                  <small>詳細な解説</small>
+                <a class="pill pill--tech" href="skill/weakness-follow-skill-builder_tech_blog.html">
+                  <span class="label">Tech</span>
+                  <small>技術者向け</small>
+                </a>
+                <a class="pill pill--biz" href="skill/weakness-follow-skill-builder_business_blog.html">
+                  <span class="label">Biz</span>
+                  <small>非エンジニア向け</small>
                 </a>
               </div>
             </td>
           </tr>
           <tr>
             <td>claude skill</td>
-            <td class="title">「作って終わり」にしないスキルづくり — guided-skill-builder のすすめ</td>
+            <td class="title">運用に耐えるスキルを作る — guided-skill-builder</td>
             <td>
               <div class="type-links">
-                <a class="pill pill--sns" href="skill/guided-skill-builder-article_sns.html">
-                  <span class="label">SNS 記事</span>
-                  <small>短く要点だけ</small>
+                <a class="pill pill--x" href="skill/guided-skill-builder_x_post.txt">
+                  <span class="label">X 投稿文</span>
+                  <small>そのまま貼れる</small>
                 </a>
-                <a class="pill pill--blog" href="skill/guided-skill-builder_article_blog.html">
-                  <span class="label">Blog 記事</span>
-                  <small>詳細な解説</small>
+                <a class="pill pill--tech" href="skill/guided-skill-builder_tech_blog.html">
+                  <span class="label">Tech</span>
+                  <small>技術者向け</small>
+                </a>
+                <a class="pill pill--biz" href="skill/guided-skill-builder_business_blog.html">
+                  <span class="label">Biz</span>
+                  <small>非エンジニア向け</small>
                 </a>
               </div>
             </td>
